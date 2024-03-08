@@ -15,7 +15,17 @@
 
             int sorHossz = Adatsorok.FirstOrDefault()?.Length ?? 0;
             string helyesadat = "";
-            List<char> NemEltalalt = new List<char>();
+
+            string helyesadatmegoldva = "7610922751913275142233435073915524642160008422684973049146293643594970710907471138712178244571230807";
+            List<Hibak> lista= new List<Hibak>();
+            for (int i = 0; i < 10; i++)
+            {
+                lista.Add(new Hibak(i , 0, 0));
+            }
+
+
+            
+
 
             var karakterGyakorisag = Enumerable.Range(0, sorHossz)
     .Select(pozicio => new
@@ -27,7 +37,7 @@
     })
     .SelectMany(data => data.Gyakorisag.Select(kv => new
     {
-        Pozicio = data.Pozicio,
+        Pozicio = data.Pozicio, 
         Karakter = kv.Key,
         Gyakorisag = kv.Value
     }))
@@ -39,53 +49,42 @@
                 Console.WriteLine($"Pozíció: {adat.Pozicio + 1}, Karakter: {adat.Karakter}, Gyakoriság: {adat.Gyakorisag}");
 
                 // Hozzáadás a helyes adathoz
+                
                 helyesadat += adat.Karakter;
 
-                // Helytelen adatok hozzáadása a listához
-                if (adat.Karakter != helyesadat[adat.Pozicio])
-                {
-                    NemEltalalt.Add(adat.Karakter);
-                }
+
+                double numerikusErtek = char.GetNumericValue(adat.Karakter);
+                int szamjegyjo = (int)numerikusErtek;
+
+                lista[szamjegyjo].Gyakorisag++;
+                lista[szamjegyjo].Osszhibaszam+=500-adat.Gyakorisag;
+
+
+                //  lista[Convert.ToInt32(adat.Karakter)].Osszhibaszam += 500 - adat.Gyakorisag;
             }
 
-
-            Console.WriteLine(NemEltalalt.Count());
-
-
-
-
-
-
-
-
-            //var karakterGyakorisag = Enumerable.Range(0, sorHossz)
-            //    .Select(pozicio => new
-            //    {
-            //        Pozicio = pozicio,
-            //        Gyakorisag = Adatsorok.Select(sor => sor[pozicio])
-            //                            .GroupBy(karakter => karakter)
-            //                            .ToDictionary(gr => gr.Key, gr => gr.Count())
-            //    })  
-            //    .SelectMany(data => data.Gyakorisag.Select(kv => new
-            //    {
-            //        Pozicio = data.Pozicio,
-            //        Karakter = kv.Key,
-            //        Gyakorisag = kv.Value
-            //    }))
-            //    .GroupBy(data => data.Pozicio)
-            //    .Select(group => group.OrderByDescending(data => data.Gyakorisag).First());
-
-            //foreach (var adat in karakterGyakorisag)
-            //{
-            //    Console.WriteLine($"Pozíció: {adat.Pozicio + 1}, Karakter: {adat.Karakter}, Gyakoriság: {adat.Gyakorisag}");
-            //    helyesadat += adat.Karakter;  
-            //}
 
             Console.WriteLine(helyesadat + " ennyi karakter:" + helyesadat.Length);
             //7610922751913275142233435073915524642160008422684973049146293643594970710907471138712178244571230807
 
 
+
+
+
+
+
+
+
+
             //c
+            //0.75138461538 ez egy százalék baby
+
+
+
+            foreach (var item in lista)
+            {
+                Console.WriteLine("számjegy:"+ item.Szamjegy+" gyakorisag:"+item.Gyakorisag+" osszhibaszam:"+item.Osszhibaszam);
+            }
 
 
 
@@ -145,6 +144,40 @@
             Console.WriteLine(SzavakLista.Select(a => a.ToList().Sum(x => Convert.ToInt32(x))).ToList().GroupBy(item => item).OrderByDescending(x => x.Count()).ToList().First().Key);
             //"a drágámnak"(a mátrix)
             // if(gymási)
+
+            //e
+            List<char> SzavakBetui = new List<char>();
+            List<char> megoldas = new List<char>();
+
+            SzavakLista.ForEach(x => {
+                if (AsciiOsszeg(x) == 607)
+                {
+                    SzavakBetui.AddRange(SzoBetui(x));
+                }
+            });
+
+            Console.Write("Megoldas: ");
+            SzavakBetui.GroupBy(x => x).ToList().ForEach(x =>
+            {
+                if (x.Count() > 5)
+                {
+                    megoldas.Add(x.Key);
+                }
+            });
+
+            megoldas = megoldas.OrderBy(x => (int)x).ToList();
+            Console.WriteLine(String.Join("", megoldas));
+
+        }
+
+        static int AsciiOsszeg(string szo)
+        {
+            return szo.ToList().Sum(x => Convert.ToInt32(x));
+        }
+
+        static List<char> SzoBetui(string szo)
+        {
+            return szo.Distinct().ToArray().OrderBy(x => (int)x).ToList();
         }
 
         static bool IsPrime(int number)
